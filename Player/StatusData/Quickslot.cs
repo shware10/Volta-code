@@ -36,6 +36,16 @@ public class Quickslot : MonoBehaviour, ISwapListener
         // 로컬 플레이어만 UI 리스너 등록
         if (pv.IsMine)
         {
+            var DroppableUIs = FindObjectsByType<MonoBehaviour>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None)
+                .OfType<DroppableUI>();
+
+            foreach(var dui in DroppableUIs)
+            {
+                dui.OnSwap += OnSwap;
+            }
+
             var SlotChangedListeners = FindObjectsByType<MonoBehaviour>(
                 FindObjectsInactive.Include,
                 FindObjectsSortMode.None)
@@ -114,7 +124,7 @@ public class Quickslot : MonoBehaviour, ISwapListener
     /// <summary>
     /// 슬롯 간 아이템 위치 교환 (드래그 앤 드롭)
     /// </summary>
-    public void SwapItem(int idx1, int idx2)
+    public void OnSwap(int idx1, int idx2)
     {
         // 튜플을 이용한 간단한 swap
         (slots[idx1], slots[idx2]) = (slots[idx2], slots[idx1]);
