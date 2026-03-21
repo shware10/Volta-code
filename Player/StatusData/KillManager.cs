@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 
+/// <summary>
+/// 킬 카운팅 클래스
+/// </summary>
 public class KillManager : MonoBehaviour
 {
     public int killCount { get; set; } = 0;
@@ -14,17 +17,18 @@ public class KillManager : MonoBehaviour
         pv = GetComponent<PhotonView>();
     }
 
+    // 킬 증가 RPC
     [PunRPC]
-    public void RpcAddKillCount()
+    private void RpcAddKillCount()
     {
-        if(pv.IsMine)
-        {
-            killCount += 1;
-        }
+        killCount += 1;
     }
 
+    /// <summary>
+    /// 킬 증가 요청 Rpc 함수 
+    /// </summary>
     public void AddKillCount()
     {
-        pv.RPC("RpcAddKillCount", RpcTarget.All);
+        pv.RPC("RpcAddKillCount", RpcTarget.Owner);
     }
 }
