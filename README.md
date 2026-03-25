@@ -1,26 +1,90 @@
-**Player**
-* **Quickslot.cs** : 무기/아이템 퀵슬롯을 관리하며 추가·제거·교환 시 이벤트로 UI에 알리는 인벤토리 로직
-* **SetLightning.cs** : 오브젝트 활성/비활성에 맞춰 자식 파티클(번개 효과)을 재생/정지
-* **StaminaManager.cs** : 스태미나 수치와 회복/소모 코루틴을 상태 변화에 따라 제어하고 UI 리스너에 브로드캐스트(로컬 플레이어만)
-* **KillManager.cs** : 킬 카운트를 관리하고 Photon RPC를 통해 모든 클라이언트에 동기화
-* **HpManager.cs** : HP 관리, 데미지/회복/사망/탈출 처리 및 RPC 동기화, UI와 킬카운트 연동
+# Volta-code
 
-* **RunState.cs** : 달리기 상태 로직(입력에 따른 상태 전이, 속도 설정, 애니메이션·사운드 처리)
-* **IdleState.cs** : 대기 상태 로직(입력에 따라 점프, 걷기, 달리기, 웅크리기 전환)
-* **JumpState.cs** : 점프 상태 로직(점프 시작/착지 시 애니메이션 및 사운드 처리, 착지 후 상태 전환)
-* **WalkState.cs** : 걷기 상태 로직(속도/후진 속도, 입력에 따른 달리기·점프·웅크리기·대기 전환, 사운드/애니메이션)
-* **CrouchState.cs** : 웅크리기 상태 로직(속도 조정, 입력에 따른 걷기·달리기·대기 전환, 애니메이션 처리)
-* **MovementBaseState.cs** : 플레이어 이동 상태들의 추상 베이스 클래스, 상태 진입·업데이트 정의
+Unity 기반 멀티플레이 게임 프로젝트로, 플레이어 상태 관리, UI 시스템, 카메라, 이펙트 등을 구성한 코드 구조입니다.
 
+---
 
-**UI**
-* **QuickslotView\.cs** : 퀵슬롯 변경·선택 이벤트를 받아 각 SlotView UI를 갱신하고 선택 하이라이트를 토글
-* **SlotView\.cs** : 슬롯별 아이콘과 선택 외곽선을 제어하는 UI 컴포넌트
-* **DraggableUI.cs** : UI 아이콘을 드래그 가능하게 하여 원래 슬롯 정보 저장·복귀 및 투명도 제어
-* **DroppableUI.cs** : 드롭 가능한 슬롯 UI, 드래그 아이콘 교환 처리와 슬롯 하이라이트 효과 제공
-* **StatusView\.cs** : HP/스태미나 바와 텍스트, 준비 상태에서 플레이어 이름 표시 등 상태 UI를 업데이트
-* **Timer.cs** : 마스터 클라이언트가 RPC로 전 클라이언트에 카운트다운을 동기화하고 종료 시 이벤트 송신
-* **PlayerCounter.cs** : 현재/총 플레이어 수를 텍스트로 표시하는 간단한 카운터 UI
+## Folder Structure
 
-* **LobbyPagePlayfab.cs** : PlayFab 계정/랭크/리더보드/위치 정보 요청 후 로비 UI에 반영
-* **LoginPagePlayfab.cs** : PlayFab 로그인·회원가입 UI 및 계정 처리, 성공 시 로비 씬 이동
+### Interface
+
+게임 내 상태 변화 이벤트를 전달하기 위한 인터페이스 모음
+
+* **IHpListener** : HP 변경 이벤트 수신
+* **IQuickSlotChangedListener** : 퀵슬롯 변경 이벤트 수신
+* **IQuickSlotSelectedListener** : 퀵슬롯 선택 변경 이벤트 수신
+* **IStaminaListener** : 스태미너 변경 이벤트 수신
+* **ISwapListener** : 슬롯 스왑 이벤트 수신
+
+---
+
+### Player
+
+#### Camera
+
+플레이어 카메라 및 시점 처리
+
+* **AimStateManager** : 마우스 입력 기반 카메라 및 시점 회전 관리
+
+#### MovementState
+
+플레이어 이동 상태(State Pattern) 관리
+
+* **MovementBaseState** : 상태 공통 인터페이스
+* **IdleState** : 대기 상태
+* **WalkState** : 걷기 상태
+* **RunState** : 달리기 상태
+* **JumpState** : 점프 상태
+* **CrouchState** : 앉기 상태
+
+#### StatusData
+
+플레이어 상태 데이터 관리
+
+* **HpManager** : 체력 및 사망 처리
+* **StaminaManager** : 스태미너 관리
+* **KillManager** : 킬 수 관리
+* **Quickslot** : 인벤토리 및 슬롯 관리
+
+---
+
+### UI
+
+#### InGameUI
+
+게임 플레이 중 UI 처리
+
+* **DraggableUI** : 아이템 드래그 처리
+* **DroppableUI** : 슬롯 간 아이템 교환 처리
+* **PointerButtonInteract** : 버튼 인터랙션 효과
+* **QuickslotView** : 퀵슬롯 UI 갱신
+* **SlotView** : 개별 슬롯 UI
+* **StatusView** : 체력/스태미너 UI
+* **Timer** : 게임 시작 카운트다운
+
+#### OutGameUI
+
+로그인 및 로비 UI
+
+* **LoginPagePlayfab** : 로그인 / 회원가입 처리
+* **LobbyPagePlayfab** : 계정 정보 및 리더보드 UI
+
+---
+
+### Effects
+
+이펙트 및 파티클 관리
+
+* **SetLightning** : 라이트닝 파티클 재생/정지 관리
+
+---
+
+## 특징
+
+* 이벤트 기반 구조 (Listener 인터페이스 활용)
+* 상태 패턴(State Pattern)을 이용한 이동 시스템
+* Photon 기반 멀티플레이 처리
+* PlayFab 연동 (로그인, 리더보드)
+* UI와 로직 분리 (View / Manager 구조)
+
+---
